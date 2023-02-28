@@ -74,3 +74,53 @@ func (s *Set) IsEmpty() bool {
 	}
 	return false
 }
+
+// 交集
+func (s *Set) Mixed(item *Set) *Set {
+	s.RLock()
+	defer s.RUnlock()
+
+	result := NewSet(item.Len())
+	for _, elem := range item.set {
+		_, ok := s.set[elem]
+		if !ok {
+			continue
+		}
+		result.set[elem] = struct{}{}
+	}
+	result.len = len(result.set)
+	return result
+}
+
+// 并集
+func (s *Set) Union(item *Set) *Set {
+	s.RLock()
+	defer s.RUnlock()
+
+	result := NewSet(s.Len() + item.Len())
+	for _, elem := range s.set {
+		result.set[elem] = struct{}{}
+	}
+	for _, elem := range item.set {
+		result.set[elem] = struct{}{}
+	}
+	result.len = len(result.set)
+	return result
+}
+
+// 差集
+func (s *Set) Diff(item *Set) *Set {
+	s.RLock()
+	defer s.RUnlock()
+
+	result := NewSet(s.Len())
+	for _, elem := range s.set {
+		_, ok := item.set[elem]
+		if ok {
+			continue
+		}
+		result.set[elem] = struct{}{}
+	}
+	result.len = len(result.set)
+	return result
+}

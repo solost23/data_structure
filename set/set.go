@@ -1,6 +1,8 @@
 package set
 
-import "sync"
+import (
+	"sync"
+)
 
 type Set struct {
 	set map[any]struct{}
@@ -12,6 +14,17 @@ func NewSet(cap int) *Set {
 	return &Set{
 		set: make(map[any]struct{}, cap),
 	}
+}
+
+func (s *Set) Len() int {
+	s.RLock()
+	defer s.RUnlock()
+
+	return s.len
+}
+
+func (s *Set) GetSet() map[any]struct{} {
+	return s.set
 }
 
 func (s *Set) Add(elem ...any) {
@@ -53,13 +66,6 @@ func (s *Set) Has(elem any) bool {
 	return true
 }
 
-func (s *Set) Len() int {
-	s.RLock()
-	defer s.RUnlock()
-
-	return s.len
-}
-
 func (s *Set) Clear() {
 	s.Lock()
 	defer s.Unlock()
@@ -81,7 +87,7 @@ func (s *Set) Mixed(item *Set) *Set {
 	defer s.RUnlock()
 
 	result := NewSet(item.Len())
-	for _, elem := range item.set {
+	for elem := range item.set {
 		_, ok := s.set[elem]
 		if !ok {
 			continue
@@ -98,10 +104,10 @@ func (s *Set) Union(item *Set) *Set {
 	defer s.RUnlock()
 
 	result := NewSet(s.Len() + item.Len())
-	for _, elem := range s.set {
+	for elem := range s.set {
 		result.set[elem] = struct{}{}
 	}
-	for _, elem := range item.set {
+	for elem := range item.set {
 		result.set[elem] = struct{}{}
 	}
 	result.len = len(result.set)
@@ -114,7 +120,7 @@ func (s *Set) Diff(item *Set) *Set {
 	defer s.RUnlock()
 
 	result := NewSet(s.Len())
-	for _, elem := range s.set {
+	for elem := range s.set {
 		_, ok := item.set[elem]
 		if ok {
 			continue

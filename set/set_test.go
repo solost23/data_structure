@@ -1,6 +1,7 @@
 package set
 
 import (
+	"fmt"
 	"strconv"
 	"testing"
 )
@@ -31,6 +32,22 @@ func TestSet(t *testing.T) {
 	if set.Len() != 1 {
 		t.Errorf("set len is 1")
 	}
+}
+
+func TestSetOp(t *testing.T) {
+	s1 := NewSet(10)
+	s1.Add(1, 2, 3)
+	s2 := NewSet(10)
+	s2.Add(3, 4, 5, )
+
+	result := s1.Union(s2)
+	fmt.Println(result.set)
+
+	result1 := s1.Diff(s2)
+	fmt.Println(result1.set)
+
+	result3 := s1.Mixed(s2)
+	fmt.Println(result3.set)
 }
 
 func BenchmarkSet(B *testing.B) {

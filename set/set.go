@@ -24,6 +24,9 @@ func (s *Set) Len() int {
 }
 
 func (s *Set) GetSet() map[any]struct{} {
+	s.RLock()
+	defer s.RUnlock()
+
 	return s.set
 }
 
